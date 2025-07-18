@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -48,4 +49,40 @@ class AuthController extends Controller
             'user' => $user
         ], 201);
     }
-}                                           
+
+    /**
+     * Handle user login.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function login(Request $request)
+    {
+        // 1. Valida os dados de entrada (email e senha)
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        // 2. Tenta autenticar o usuário
+        if (Auth::attempt($credentials)) {
+            // 3. Se a autenticação for bem-sucedida...
+            $user = Auth::user(); // Pega o usuário autenticado
+            
+            // Cria um novo token de acesso para o usuário
+            $token = $user->createToken('auth-token')->plainTextToken;
+
+            // Retorna os dados do usuário e o token
+            return response()->json([
+                'message' => 'Login bem-sucedido!',
+                'user' => $user,
+                'access_token' => $token,
+            ], 200);
+        }
+
+        // 4. Se a autenticação falhar...
+        return response()->json([
+            'message' => 'Credenciais inválidas.'
+        ], 401); // 401 Unauthorized é o código HTTP correto para falha de login
+    }
+}
