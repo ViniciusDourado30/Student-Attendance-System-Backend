@@ -16,9 +16,9 @@ class TurmaController extends Controller
 
     public function store(Request $request)
     {
+        // Validação agora apenas para o campo 'name'
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'subject' => 'required|string|max:255',
         ]);
 
         $validatedData['user_id'] = Auth::id();
@@ -42,9 +42,9 @@ class TurmaController extends Controller
             return response()->json(['message' => 'Acesso não autorizado'], 403);
         }
 
+        // Validação de atualização apenas para o campo 'name'
         $validatedData = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'subject' => 'sometimes|required|string|max:255',
         ]);
 
         $turma->update($validatedData);

@@ -12,12 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('alunos', function (Blueprint $table) {
-            $table->id(); // A coluna 'id' do aluno
-            $table->string('nome_completo'); // O nome do aluno
-            
-            // Esta é a coluna que liga o aluno à sua turma
+            $table->id();
+            $table->string('name'); // <-- MUDANÇA AQUI
             $table->foreignId('turma_id')->constrained('turmas')->onDelete('cascade');
-
             $table->timestamps();
         });
     }

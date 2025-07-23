@@ -13,20 +13,14 @@ class Turma extends Model
 
     /**
      * The attributes that are mass assignable.
-     * Os atributos que podem ser preenchidos em massa.
-     *
-     * @var array<int, string>
      */
-    // Dentro do modelo Turma.php
     protected $fillable = [
-        'name',      // Antes era 'nome'
-        'subject',   // Antes era 'materia'
+        'name', // Apenas o nome
         'user_id',
     ];
 
     /**
      * Get the user that owns the turma.
-     * Define o relacionamento: uma turma pertence a um utilizador (professor).
      */
     public function user(): BelongsTo
     {
@@ -35,7 +29,6 @@ class Turma extends Model
 
     /**
      * Get the alunos for the turma.
-     * Define o relacionamento: uma turma pode ter muitos alunos.
      */
     public function alunos(): HasMany
     {

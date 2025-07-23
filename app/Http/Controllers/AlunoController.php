@@ -2,63 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Aluno;
+use App\Models\Turma;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AlunoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostra uma lista de todos os alunos de uma turma específica.
      */
-    public function index()
+    public function index(Turma $turma)
     {
-        //
+        if ($turma->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Acesso não autorizado a esta turma.'], 403);
+        }
+        return response()->json($turma->alunos);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Adiciona um novo aluno a uma turma específica.
      */
-    public function create()
+    public function store(Request $request, Turma $turma)
     {
-        //
-    }
+        if ($turma->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Acesso não autorizado para adicionar alunos a esta turma.'], 403);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        // Valida os dados recebidos, esperando por 'name'
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $validatedData['turma_id'] = $turma->id;
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        $aluno = Aluno::create($validatedData);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json($aluno, 201);
     }
 }

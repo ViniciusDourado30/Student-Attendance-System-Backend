@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('turmas', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // CORRIGIDO: Antes era 'nome'
-            $table->string('subject'); // CORRIGIDO: Antes era 'materia'
+            $table->string('name'); // Apenas o nome da turma
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('turmas');
