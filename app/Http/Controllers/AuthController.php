@@ -18,23 +18,23 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function register(Request $request)
-    {
-        // 1. Validação dos dados recebidos da requisição
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => [
-                'required',
-                'string',
-                Rule::in(['Monitor(a)', 'Professor(a)']),
-            ],
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+        'role' => [
+            'required',
+            'string',
+            Rule::in(['Monitor(a)', 'Professor(a)']),
+        ],
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
+    if ($validator->fails()) {
+        return response()->json($validator->errors(), 400);
+    }
 
+    try {
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -45,7 +45,19 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Usuário registrado com sucesso!',
         ], 201);
+    } catch (\Illuminate\Database\QueryException $e) {
+        if ($e->getCode() === '23000') {
+            return response()->json([
+                'error' => 'E-mail já está em uso.',
+            ], 409); // 409 Conflict
+        }
+
+        return response()->json([
+            'error' => 'Erro inesperado ao registrar usuário.',
+        ], 500);
     }
+}
+
 
     /**
      * Handle user login.
