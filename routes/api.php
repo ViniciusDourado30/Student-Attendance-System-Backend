@@ -6,15 +6,18 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TurmaController;
 use App\Http\Controllers\AlunoController;
 use App\Http\Controllers\ChamadaController;
-use App\Http\Controllers\PresencaController; 
+use App\Http\Controllers\PresencaController;
+use App\Http\Controllers\PasswordResetController;
 
 /*
 |--------------------------------------------------------------------------
-| Rotas de Autenticação (Públicas)
+| Rotas Públicas
 |--------------------------------------------------------------------------
 */
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [PasswordResetController::class, 'sendCode']);
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
 
 
     
@@ -28,6 +31,9 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
+    // Nova rota para validar o token
+    Route::get('/validate-token', [AuthController::class, 'validateToken']);
+
     // Rotas para gerir as turmas
     Route::apiResource('turmas', TurmaController::class);
 
@@ -37,6 +43,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rota para criar uma chamada DENTRO de uma turma
     Route::post('/turmas/{turma}/chamadas', [ChamadaController::class, 'store']);
 
-    // 2. Adicione a rota para registar as presenças de uma chamada
+    // Rota para registar as presenças de uma chamada
     Route::post('/chamadas/{chamada}/presencas', [PresencaController::class, 'store']);
 });

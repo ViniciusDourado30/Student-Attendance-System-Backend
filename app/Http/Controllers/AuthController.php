@@ -67,21 +67,18 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        // 1. Valida os dados de entrada (email e senha)
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
         ]);
 
-        // 2. Tenta autenticar o usuário
         if (Auth::attempt($credentials)) {
             // 3. Se a autenticação for bem-sucedida...
             $user = Auth::user(); // Pega o usuário autenticado
-                    
+            
             // Cria um novo token de acesso para o usuário
             $token = $user->createToken('auth-token')->plainTextToken;
 
-            // Retorna os dados do usuário e o token
             return response()->json([
                 'message' => 'Login bem-sucedido!',
                 'user' => $user,
@@ -89,9 +86,23 @@ class AuthController extends Controller
             ], 200);
         }
 
-        // 4. Se a autenticação falhar...
         return response()->json([
             'message' => 'Credenciais inválidas.'
-        ], 401); // 401 Unauthorized é o código HTTP correto para falha de login
+        ], 401);
+    }
+
+    /**
+     * Validate the authentication token.
+     * Se esta função for executada, o token é válido.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function validateToken(Request $request)
+    {
+        return response()->json([
+            'message' => 'Token é válido.',
+            'user' => $request->user(), // Devolve os dados do utilizador autenticado
+        ], 200);
     }
 }
