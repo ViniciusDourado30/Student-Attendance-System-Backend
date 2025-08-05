@@ -77,7 +77,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             // 3. Se a autenticação for bem-sucedida...
             $user = Auth::user(); // Pega o usuário autenticado
-            
+                    
             // Cria um novo token de acesso para o usuário
             $token = $user->createToken('auth-token')->plainTextToken;
 
