@@ -20,24 +20,23 @@ class PasswordResetController extends Controller
         $request->validate(['email' => 'required|email|exists:users,email']);
 
         $user = User::where('email', $request->email)->first();
+        // Gera um código aleatório de 6 dígitos
         $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        // Armazena o código na base de dados
+        // Armazena o código na base de dados de forma segura (hash)
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $request->email],
             [
-                'token' => Hash::make($code), // Armazena o hash do código por segurança
+                'token' => Hash::make($code),
                 'created_at' => Carbon::now()
             ]
         );
 
-        // Envia o e-mail
+        // Envia o e-mail para o utilizador com o código
         Mail::to($user)->send(new SendPasswordResetCode($code));
 
-        // ALTERAÇÃO: Adicionado o código à resposta JSON para facilitar os testes.
         return response()->json([
             'message' => 'Código de redefinição enviado com sucesso.',
-            'code' => $code
         ]);
     }
 
@@ -46,33 +45,37 @@ class PasswordResetController extends Controller
      */
     public function resetPassword(Request $request)
     {
+        // 1. Valida os dados recebidos: e-mail, código e a nova senha confirmada.
         $request->validate([
             'email' => 'required|email|exists:users,email',
             'code' => 'required|string|min:6|max:6',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+        // 2. Procura o token na base de dados pelo e-mail do utilizador.
         $tokenData = DB::table('password_reset_tokens')
             ->where('email', $request->email)->first();
 
-        // Verifica se o token existe e não expirou (ex: 10 minutos)
-        if (!$tokenData || Carbon::parse($tokenData->created_at)->addMinutes(10)->isPast()) {
+        // 3. Verifica se o token existe e se não expirou (válido por 5 minutos).
+        if (!$tokenData || Carbon::parse($tokenData->created_at)->addMinutes(5)->isPast()) {
             return response()->json(['message' => 'Código inválido ou expirado.'], 400);
         }
 
-        // Verifica se o código fornecido corresponde ao hash armazenado
+        // 4. Compara o código recebido do front-end com o token guardado na base de dados.
         if (!Hash::check($request->code, $tokenData->token)) {
+            // Se não forem iguais, retorna uma mensagem de erro.
             return response()->json(['message' => 'Código inválido.'], 400);
         }
 
-        // Atualiza a senha do utilizador
+        // 5. Se os códigos forem iguais, muda a senha.
         $user = User::where('email', $request->email)->first();
         $user->password = Hash::make($request->password);
         $user->save();
 
-        // Apaga o token para que não possa ser reutilizado
+        // 6. Apaga o token para que não possa ser reutilizado.
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
+        // 7. Retorna uma mensagem de sucesso.
         return response()->json(['message' => 'Senha redefinida com sucesso.']);
     }
 }
