@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Aluno extends Model
 {
@@ -12,16 +11,18 @@ class Aluno extends Model
 
     /**
      * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
-        'name', // Alterado de 'full_name'
+        'name',
         'turma_id',
     ];
 
     /**
-     * Get the turma that the aluno belongs to.
+     * Get the turma that owns the aluno.
      */
-    public function turma(): BelongsTo
+    public function turma()
     {
         return $this->belongsTo(Turma::class);
     }

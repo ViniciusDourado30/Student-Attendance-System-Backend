@@ -10,18 +10,8 @@ use Illuminate\Support\Facades\Auth;
 class AlunoController extends Controller
 {
     /**
-     * NOVO: Lista todos os alunos registados no sistema, independentemente da turma.
-     */
-    public function index()
-    {
-        // Apenas para fins de exemplo, estamos a permitir que qualquer professor autenticado veja todos os alunos.
-        // Numa aplicação real, poderia haver regras mais específicas.
-        return Aluno::all();
-    }
-
-    /**
-     * NOVO: Cria um novo aluno no sistema, sem o associar a uma turma.
-     * Esta é a função principal para registar um aluno.
+     * Cria um novo aluno no sistema, sem o associar a nenhuma turma.
+     * O 'turma_id' será automaticamente definido como null.
      */
     public function store(Request $request)
     {
@@ -29,19 +19,21 @@ class AlunoController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
+        // Cria o aluno apenas com o nome. O turma_id será null por defeito,
+        // conforme definido na migração da base de dados.
         $aluno = Aluno::create($validatedData);
 
         return response()->json($aluno, 201);
     }
 
     /**
-     * NOVO: Associa um aluno existente a uma turma específica.
+     * Associa um aluno existente a uma turma específica.
      */
     public function assignToTurma(Request $request, Turma $turma)
     {
-        // Verifica se a turma pertence ao professor autenticado.
+        // Garante que o professor só pode adicionar alunos às suas próprias turmas.
         if ($turma->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Acesso não autorizado a esta turma.'], 403);
+            return response()->json(['message' => 'Acesso não autorizado para adicionar alunos a esta turma.'], 403);
         }
 
         $validatedData = $request->validate([
@@ -49,6 +41,12 @@ class AlunoController extends Controller
         ]);
 
         $aluno = Aluno::find($validatedData['aluno_id']);
+
+        // Opcional: Verifica se o aluno já não está noutra turma para evitar conflitos.
+        if ($aluno->turma_id) {
+            return response()->json(['message' => 'Este aluno já está associado a outra turma.'], 409); // 409 Conflict
+        }
+
         $aluno->turma_id = $turma->id;
         $aluno->save();
 
@@ -56,7 +54,7 @@ class AlunoController extends Controller
     }
 
     /**
-     * NOVO: Lista todos os alunos de uma turma específica.
+     * Mostra uma lista de todos os alunos de uma turma específica.
      */
     public function indexByTurma(Turma $turma)
     {
