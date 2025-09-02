@@ -48,7 +48,6 @@ class PasswordResetController extends Controller
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
-            // CORREÇÃO: A regra agora valida um código numérico de 6 dígitos.
             'code' => 'required|string|digits:6',
             'password' => 'required|string|min:8|confirmed',
         ]);
