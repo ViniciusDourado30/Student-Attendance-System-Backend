@@ -12,12 +12,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'http://localhost:3000', // Mantemos este para o caso de precisar
-        'http://localhost:5173', // Adicionamos o endereço correto do seu front-end
-    ],
+    'allowed_origins' => ['*'],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => ['*'],
 
     'allowed_headers' => ['*'],
 
@@ -26,5 +23,4 @@ return [
     'max_age' => 0,
 
     'supports_credentials' => true,
-
 ];
