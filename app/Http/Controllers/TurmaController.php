@@ -13,7 +13,7 @@ class TurmaController extends Controller
      */
     public function index()
     {
-        return Auth::user()->turmas;
+        return Auth::user()->turmas->load('user');
     }
 
     /**
@@ -24,7 +24,6 @@ class TurmaController extends Controller
         // 1. Validar os dados que vêm do front-end (apenas nome e matéria)
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'subject' => 'required|string|max:255',
         ]);
 
         // 2. A MÁGICA ACONTECE AQUI:
@@ -32,7 +31,7 @@ class TurmaController extends Controller
         // O front-end NÃO precisa de enviar o user_id. Nós obtemo-lo de forma segura no back-end.
         $validatedData['user_id'] = Auth::id();
 
-        // 3. Criamos a turma com os dados completos (nome, matéria e o user_id seguro).
+        // 3. Criamos a turma com os dados completos (nome e o user_id seguro).
         $turma = Turma::create($validatedData);
 
         return response()->json($turma, 201);
@@ -46,7 +45,7 @@ class TurmaController extends Controller
         if ($turma->user_id !== Auth::id()) {
             return response()->json(['message' => 'Acesso não autorizado.'], 403);
         }
-        return response()->json($turma);
+        return response()->json($turma->load('user'));
     }
 
     /**
@@ -59,8 +58,7 @@ class TurmaController extends Controller
         }
 
         $validatedData = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'subject' => 'sometimes|required|string|max:255',
+            'name' => 'sometimes|required|string|max:255'
         ]);
 
         $turma->update($validatedData);

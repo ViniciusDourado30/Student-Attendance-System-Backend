@@ -47,9 +47,8 @@ class PasswordResetController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users,email',
             'code' => 'required|string|digits:6',
-            'password' => 'required|string|min:8|confirmed',
+            'new_password' => 'required|string|min:8',
         ]);
 
         // AQUI VERIFICAMOS A LIGAÇÃO:

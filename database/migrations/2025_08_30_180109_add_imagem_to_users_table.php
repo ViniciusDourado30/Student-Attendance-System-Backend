@@ -16,7 +16,7 @@ return new class extends Migration
             // com o link DIRETO para a imagem padrão.
             $table->string('image')
                   ->nullable()
-                  ->default('https://i.imgur.com/eC3ZTpj.png') // <-- LINK CORRIGIDO AQUI
+                  ->default('https://i.imgur.com/a/da-eC3ZTpj.png') // <-- LINK CORRIGIDO AQUI
                   ->first();
         });
     }

@@ -19,6 +19,8 @@ class AlunoController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
+        $request->turma_id = null;
+
         // Cria o aluno apenas com o nome. O turma_id será null por defeito,
         // conforme definido na migração da base de dados.
         $aluno = Aluno::create($validatedData);
@@ -63,4 +65,13 @@ class AlunoController extends Controller
         }
         return response()->json($turma->alunos);
     }
+
+    public function index(Request $request)
+    {
+        $alunos = Aluno::all();
+        return response()->json($alunos);
+    }
 }
+
+
+    
