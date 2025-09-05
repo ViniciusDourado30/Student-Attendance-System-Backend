@@ -33,7 +33,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rotas de Turmas
     Route::apiResource('turmas', TurmaController::class);
 
-    // --- LÓGICA CORRIGIDA PARA ALUNOS ---
 
     // Rota para CRIAR um novo aluno no sistema (sem turma)
     // POST /api/alunos
@@ -58,4 +57,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rota para registar as presenças de uma chamada
     Route::post('/chamadas/{chamada}/presencas', [PresencaController::class, 'store']);
+
+    //rota para excluir uma chamada
+    Route::delete('/chamadas/{chamada}', [ChamadaController::class, 'destroy']);
+
+    //rota para update uma chamada
+    Route::put('/chamadas/{chamada}', [ChamadaController::class, 'update']);
 });
