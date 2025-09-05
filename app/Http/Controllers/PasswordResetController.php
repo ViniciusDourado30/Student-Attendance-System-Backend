@@ -46,8 +46,13 @@ class PasswordResetController extends Controller
      */
     public function resetPassword(Request $request)
     {
+        // Checagem manual do tamanho do código ANTES da validação padrão
+        if (strlen($request->code) > 6) {
+            return response()->json(['message' => 'Código maior que seis dígitos.'], 400);
+        }
+
         $request->validate([
-            'code' => 'required|string|digits:6',
+            'code' => 'required|string',
             'new_password' => 'required|string|min:8',
         ]);
 
