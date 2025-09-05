@@ -71,7 +71,24 @@ class AlunoController extends Controller
         $alunos = Aluno::all();
         return response()->json($alunos);
     }
-}
 
+    public function uptade(Request $request, Aluno $aluno)
+    {
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'turma_id' => 'nullable|exists:turmas,id',
+            ['message' => 'O aluno não pode ser associado a mais de uma turma ao mesmo tempo.']
+        ]);
+
+        $aluno->update($validatedData);
+        return response()->json($aluno);
+    }
+
+    public function destroy(Aluno $aluno)
+    {
+        $aluno->delete();
+        return response()->json(['message' => 'Aluno removido com sucesso.'], 204);
+    }
+}
 
     
