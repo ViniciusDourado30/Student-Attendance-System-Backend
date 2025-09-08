@@ -50,6 +50,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // POST /api/turmas/{turma}/alunos
     Route::post('/turmas/{turma}/alunos', [AlunoController::class, 'assignToTurma']);
 
+    // Rota para EXCLUIR um aluno
+    Route::delete('/alunos/{aluno}', [AlunoController::class, 'destroy']);
+
+    // Rota para ATUALIZAR os dados de um aluno
+    Route::put('/alunos/{aluno}', [AlunoController::class, 'update']);
+
+    //rota update de um aluno
+    Route::patch('/alunos/{aluno}', [AlunoController::class, 'update']);
+
     // --- FIM DA LÓGICA DE ALUNOS ---
 
     // Rota para criar uma chamada DENTRO de uma turma
