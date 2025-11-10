@@ -33,7 +33,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rotas de Turmas
     Route::apiResource('turmas', TurmaController::class);
 
-
     // Rota para CRIAR um novo aluno no sistema (sem turma)
     // POST /api/alunos
     Route::post('/alunos', [AlunoController::class, 'store']);
@@ -44,20 +43,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Rota para LISTAR os alunos de UMA TURMA específica
     // GET /api/turmas/{turma}/alunos
-    Route::get('/turmas/{turma}/alunos', [AlunoController::class, 'indexByTurma']);
+    Route::get('/turmas/{turma}/alunos', [TurmaController::class, 'indexByTurma']);
 
     // Rota para ASSOCIAR um aluno existente a uma turma
     // POST /api/turmas/{turma}/alunos
-    Route::post('/turmas/{turma}/alunos', [AlunoController::class, 'assignToTurma']);
+    Route::post('/turmas/{turma}/alunos/{aluno}', [AlunoController::class, 'assignAlunoToTurma']);
 
     // Rota para EXCLUIR um aluno
     Route::delete('/alunos/{aluno}', [AlunoController::class, 'destroy']);
 
     // Rota para ATUALIZAR os dados de um aluno
     Route::put('/alunos/{aluno}', [AlunoController::class, 'update']);
-
-    //rota update de um aluno
-    Route::patch('/alunos/{aluno}', [AlunoController::class, 'update']);
 
     // --- FIM DA LÓGICA DE ALUNOS ---
 

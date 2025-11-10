@@ -31,53 +31,38 @@ class AlunoController extends Controller
     /**
      * Associa um aluno existente a uma turma específica.
      */
-    public function assignToTurma(Request $request, Turma $turma)
+    public function assignAlunoToTurma(Request $request, Turma $turma, Aluno $aluno)
     {
-        // Garante que o professor só pode adicionar alunos às suas próprias turmas.
-        if ($turma->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Acesso não autorizado para adicionar alunos a esta turma.'], 403);
-        }
+        // 1. (Opcional, mas recomendado) Verificar se o usuário autenticado tem permissão para modificar esta turma
 
-        $validatedData = $request->validate([
-            'aluno_id' => 'required|exists:alunos,id',
-        ]);
-
-        $aluno = Aluno::find($validatedData['aluno_id']);
-
-        // Opcional: Verifica se o aluno já não está noutra turma para evitar conflitos.
-        if ($aluno->turma_id) {
+        // 2. Verificar se o aluno já está associado a alguma turma
+        if ($aluno->turma_id && $aluno->turma_id !== $turma->id) {
             return response()->json(['message' => 'Este aluno já está associado a outra turma.'], 409); // 409 Conflict
         }
 
+        // 3. Associar o aluno à turma (atualiza a chave estrangeira)
         $aluno->turma_id = $turma->id;
         $aluno->save();
 
-        return response()->json($aluno);
+        // 4. Retornar o aluno atualizado (agora com o turma_id)
+        return response()->json($aluno->load('turma')); // Carrega a relação para mostrar no frontend
     }
 
     /**
      * Mostra uma lista de todos os alunos de uma turma específica.
      */
-    public function indexByTurma(Turma $turma)
-    {
-        if ($turma->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Acesso não autorizado a esta turma.'], 403);
-        }
-        return response()->json($turma->alunos);
-    }
-
+    
     public function index(Request $request)
     {
-        $alunos = Aluno::all();
+        $alunos = Aluno::with('turma')->get();
         return response()->json($alunos);
     }
 
-    public function uptade(Request $request, Aluno $aluno)
+    public function update(Request $request, Aluno $aluno)
     {
         $validatedData = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'turma_id' => 'nullable|exists:turmas,id',
-            ['message' => 'O aluno não pode ser associado a mais de uma turma ao mesmo tempo.']
+            'id' => 'sometimes|required|integer|exists:alunos,id',
         ]);
 
         $aluno->update($validatedData);
@@ -91,4 +76,3 @@ class AlunoController extends Controller
     }
 }
 
-    
