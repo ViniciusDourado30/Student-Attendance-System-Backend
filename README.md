@@ -59,3 +59,65 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Endpoints de Faltas (Ausências)
+
+Foram adicionados endpoints para registar e consultar faltas dos alunos por turma e data.
+
+### Registar faltas em lote
+
+POST `/api/faltas`
+
+Headers: `Authorization: Bearer <token>`
+
+Body JSON (turma_id é recomendado; se omitido, será deduzido pela turma dos alunos):
+```json
+{
+	"turma_id": 3,
+	"data": "2025-11-09",
+	"aluno_ids": [5,6,12,16,19]
+}
+```
+Respostas possíveis:
+- `201 Created` sucesso
+```json
+{
+	"message": "Faltas registadas com sucesso.",
+	"chamada_id": 10,
+	"turma_id": 3,
+	"data": "2025-11-09",
+	"total_registos": 5,
+	"aluno_ids": [5,6,12,16,19]
+}
+```
+- `403` caso o professor não seja dono da turma.
+- `422` validação falhou.
+
+### Consultar faltas do dia
+
+GET `/api/faltas?turma_id=3&data=2025-11-09`
+
+Resposta:
+```json
+{
+	"chamada_id": 10,
+	"turma_id": 3,
+	"data": "2025-11-09",
+	"total": 2,
+	"faltas": [
+		{"id": 31, "aluno_id": 5, "aluno_nome": "João", "status": "ausente"},
+		{"id": 32, "aluno_id": 6, "aluno_nome": "Maria", "status": "ausente"}
+	]
+}
+```
+Se não existir chamada para a data, retorna:
+```json
+{"faltas": [], "total": 0}
+```
+
+### Notas
+1. Uma falta é representada por um registo em `presencas` com `status = "ausente"`.
+2. Usa-se `updateOrCreate` para evitar duplicação se o endpoint for chamado novamente para os mesmos alunos.
+3. Todos os `aluno_ids` devem pertencer à turma indicada.
+4. A chamada (registro em `chamadas`) é criada automaticamente se não existir para a data.
+
