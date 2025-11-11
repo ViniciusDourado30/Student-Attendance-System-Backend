@@ -66,6 +66,14 @@ class TurmaController extends Controller
         return response()->json($turma);
     }
 
+    public function indexByTurma(Turma $turma)
+    {
+        if ($turma->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Acesso não autorizado a esta turma.'], 403);
+        }
+        return response()->json($turma->alunos);
+    }
+
     /**
      * Apaga uma turma, se pertencer ao utilizador.
      */
