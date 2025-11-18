@@ -34,17 +34,11 @@ class AlunoController extends Controller
     public function assignAlunoToTurma(Request $request, Turma $turma, Aluno $aluno)
     {
         // 1. (Opcional, mas recomendado) Verificar se o usuário autenticado tem permissão para modificar esta turma
-
-        // 2. Verificar se o aluno já está associado a alguma turma
-        if ($aluno->turma_id && $aluno->turma_id !== $turma->id) {
-            return response()->json(['message' => 'Este aluno já está associado a outra turma.'], 409); // 409 Conflict
-        }
-
-        // 3. Associar o aluno à turma (atualiza a chave estrangeira)
+        // 2. Independente de já ter outra turma, sobrescreve para a nova turma solicitada
         $aluno->turma_id = $turma->id;
         $aluno->save();
 
-        // 4. Retornar o aluno atualizado (agora com o turma_id)
+        // 3. Retornar o aluno atualizado (agora com o turma_id atualizado)
         return response()->json($aluno->load('turma')); // Carrega a relação para mostrar no frontend
     }
 
