@@ -144,6 +144,21 @@ class PresencaController extends Controller
      */
     public function indexFaltas(Request $request)
     {
+        // Permite usar tanto 'turma_id' quanto 'sala_id' como alias
+        $turmaId = $request->input('turma_id');
+        if (!$turmaId) {
+            $turmaId = $request->input('sala_id');
+        }
+
+        if (!$turmaId) {
+            return response()->json([
+                'message' => 'Informe turma_id (ou sala_id) e data no formato YYYY-MM-DD.'
+            ], 422);
+        }
+
+        // Mescla para validar normalmente com a regra de exists
+        $request->merge(['turma_id' => $turmaId]);
+
         $query = $request->validate([
             'turma_id' => 'required|integer|exists:turmas,id',
             'data'     => 'required|date',
