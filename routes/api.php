@@ -63,6 +63,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rota para registar as presenças de uma chamada
     Route::post('/chamadas/{chamada}/presencas', [PresencaController::class, 'store']);
 
+    // Faltas (ausências) agora tratadas pelo PresencaController
+    Route::post('/faltas', [PresencaController::class, 'storeFaltas']);
+    Route::get('/faltas', [PresencaController::class, 'indexFaltas']);
+
     //rota para excluir uma chamada
     Route::delete('/chamadas/{chamada}', [ChamadaController::class, 'destroy']);
 
