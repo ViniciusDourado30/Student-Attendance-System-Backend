@@ -58,7 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- FIM DA LÓGICA DE ALUNOS ---
 
     // Rota para criar uma chamada DENTRO de uma turma
-    Route::post('/turmas/{turma}/chamadas', [ChamadaController::class, 'store']);
+    Route::post('/turmas/{turma}/chamadas', [ChamadaController::class, 'store']); 
 
     // Rota para registar as presenças de uma chamada
     Route::post('/chamadas/{chamada}/presencas', [PresencaController::class, 'store']);
