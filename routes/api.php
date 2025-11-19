@@ -52,27 +52,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Rota para EXCLUIR um aluno
     Route::delete('/alunos/{aluno}', [AlunoController::class, 'destroy']);
 
-    // Rota para ATUALIZAR os dados de um aluno
-    Route::put('/alunos/{aluno}', [AlunoController::class, 'update']);
-
-    // --- FIM DA LÓGICA DE ALUNOS ---
-
-<<<<<<< HEAD
-    // Rota para criar uma chamada DENTRO de uma turma
-    Route::post('/turmas/{turma}/chamadas', [ChamadaController::class, 'store']); 
-
-=======
->>>>>>> 7a9eaf5f3d7ccf551b11fc17e11feb6c8bfc50ec
-    // Rota para registar as presenças de uma chamada
-    Route::post('/chamadas/{chamada}/presencas', [PresencaController::class, 'store']);
-
-    // Faltas (ausências) agora tratadas pelo PresencaController
-    Route::post('/faltas', [PresencaController::class, 'storeFaltas']);
-    Route::get('/faltas', [PresencaController::class, 'indexFaltas']);
-
-    //rota para excluir uma chamada
-    Route::delete('/chamadas/{chamada}', [ChamadaController::class, 'destroy']);
-
-    //rota para update uma chamada
-    Route::put('/chamadas/{chamada}', [ChamadaController::class, 'update']);
-});
+        // Rota para ATUALIZAR os dados de um aluno
+        Route::put('/alunos/{aluno}', [AlunoController::class, 'update']);
+    });
